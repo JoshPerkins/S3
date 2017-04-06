@@ -17,9 +17,13 @@ const objectGet = require('../../lib/api/objectGet');
 const bucketPutVersioning = require('../../lib/api/bucketPutVersioning');
 const initiateMultipartUpload =
     require('../../lib/api/initiateMultipartUpload');
+const multipartDelete = require('../../lib/api/multipartDelete');
 const objectPutPart = require('../../lib/api/objectPutPart');
 const completeMultipartUpload =
     require('../../lib/api/completeMultipartUpload');
+const fakeUploadId =
+    'Cg5hcn5dU9v0ZS10bxgUkefKiQ2y7h9ne0J5kvZlDl6X_3t1TccsEexDtt7Cpcw3Cts9N' +
+    'Lc_w4zkCJS9h_e95ws3cUZ1KJhd8iSyJJ9GD1aLR1TAZwWfH52btGYiXAFi';
 
 const s3 = new AWS.S3();
 const log = new DummyRequestLogger();
@@ -75,6 +79,12 @@ const initiateRequest = {
 };
 const awsETag = 'be747eb4b75517bf6b3cf7c5fbb62f3a';
 const awsETagBigObj = 'f1c9645dbc14efddc7d8a322685f26eb';
+const deleteParams = {
+    bucketName,
+    namespace,
+    objectKey,
+    headers: { host: `${bucketName}.s3.amazonaws.com` },
+};
 const partParams = {
     bucketName,
     namespace,
@@ -232,6 +242,57 @@ describe('Multipart Upload API with AWS Backend', function mpuTestSuite() {
                     done();
                 });
             });
+        });
+    });
+
+    it('should abort a multipart upload on real AWS', done => {
+        async.waterfall([
+            next => bucketPut(authInfo, bucketPutRequest, log, err =>
+                next(err)
+            ),
+            next => initiateMultipartUpload(authInfo, initiateRequest,
+            log, (err, result) =>
+                next(err, result)
+            ),
+            (result, next) => {
+                parseString(result, (err, json) => {
+                    const uploadId =
+                        json.InitiateMultipartUploadResult.UploadId[0];
+                    return next(err, uploadId);
+                });
+            },
+            (uploadId, next) => {
+                deleteParams.url = `/${objectKey}?uploadId=${uploadId}`;
+                deleteParams.query = { uploadId };
+                multipartDelete(authInfo, deleteParams, log, err =>
+                    next(err, uploadId)
+                );
+            },
+        ], (err, uploadId) => {
+            assert.equal(err, null, `Error aborting MPU: ${err}`);
+            s3.listParts({ Bucket: awsBucket, Key: objectKey,
+            UploadId: uploadId }, err => {
+                assert.strictEqual(err.code, 'NoSuchUpload');
+                done();
+            });
+        });
+    });
+
+    it('should not return error on abort of MPU that does not exist', done => {
+        async.waterfall([
+            next => bucketPut(authInfo, bucketPutRequest, log, err =>
+                next(err)
+            ),
+            next => {
+                deleteParams.url = `/${objectKey}?uploadId=${fakeUploadId}`;
+                deleteParams.query = { fakeUploadId };
+                multipartDelete(authInfo, deleteParams, log, err =>
+                    next(err)
+                );
+            },
+        ], err => {
+            assert.equal(err, null, `Error aborting MPU: ${err}`);
+            done();
         });
     });
 
