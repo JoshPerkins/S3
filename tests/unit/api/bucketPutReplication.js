@@ -3,7 +3,7 @@ const assert = require('assert');
 const { DummyRequestLogger } = require('../helpers');
 const getReplicationConfiguration =
     require('../../../lib/api/apiUtils/bucket/getReplicationConfiguration');
-const { replicationUtils, createReplicationXML } =
+const replicationUtils =
     require('../../functional/aws-node-sdk/lib/utility/replication');
 const log = new DummyRequestLogger();
 
@@ -33,6 +33,28 @@ function checkGeneratedID(xml, cb) {
             `of 48 but got ${id.length}`);
         return cb();
     });
+}
+
+// Create replication configuration XML with an tag optionally omitted.
+function createReplicationXML(missingTag, tagValue) {
+    const Role = missingTag === 'Role' ? '' :
+        '<Role>arn:partition:service::account-id:resourcetype/resource</Role>';
+    let ID = missingTag === 'ID' ? '' : '<ID>foo</ID>';
+    ID = tagValue && tagValue.ID === '' ? '<ID/>' : ID;
+    const Prefix = missingTag === 'Prefix' ? '' : '<Prefix>foo</Prefix>';
+    const Status = missingTag === 'Status' ? '' : '<Status>Enabled</Status>';
+    const Bucket = missingTag === 'Bucket' ? '' :
+        '<Bucket>arn:aws:s3:::destination-bucket</Bucket>';
+    const StorageClass = missingTag === 'StorageClass' ? '' :
+        '<StorageClass>STANDARD</StorageClass>';
+    const Destination = missingTag === 'Destination' ? '' :
+        `<Destination>${Bucket + StorageClass}</Destination>`;
+    const Rule = missingTag === 'Rule' ? '' :
+        `<Rule>${ID + Prefix + Status + Destination}</Rule>`;
+    const content = missingTag === null ? '' : `${Role}${Rule}`;
+    return '<ReplicationConfiguration ' +
+            `xmlns="http://s3.amazonaws.com/doc/2006-03-01/">${content}` +
+        '</ReplicationConfiguration>';
 }
 
 describe('\'getReplicationConfiguration\' function', () => {
