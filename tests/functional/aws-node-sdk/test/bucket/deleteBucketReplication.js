@@ -17,7 +17,12 @@ const replicationConfig = {
     ],
 };
 
-describe.only('aws-node-sdk test deleteBucketReplication', () => {
+function assertResponse(err, data) {
+    assert.strictEqual(err, null);
+    assert.deepStrictEqual(data, {});
+}
+
+describe('aws-node-sdk test deleteBucketReplication', () => {
     let s3;
     let otherAccountS3;
 
@@ -25,34 +30,44 @@ describe.only('aws-node-sdk test deleteBucketReplication', () => {
         const config = getConfig('default', { signatureVersion: 'v4' });
         s3 = new S3(config);
         otherAccountS3 = new BucketUtility('lisa', {}).s3;
-        return series([
-            next => s3.createBucket({ Bucket: bucket }, next),
-            next => s3.putBucketVersioning({
-                Bucket: bucket,
-                VersioningConfiguration: { Status: 'Enabled' },
-            }, next),
-        ], done);
+        return s3.createBucket({ Bucket: bucket }, done);
     });
 
     afterEach(done => s3.deleteBucket({ Bucket: bucket }, done));
 
-    it('should return empty object if bucket has no replication config', done =>
+    it('should return empty object if bucket is not versioned enabled', done =>
         s3.deleteBucketReplication({ Bucket: bucket }, (err, data) => {
-            assert.strictEqual(err, null);
-            assert.deepStrictEqual(data, {});
+            assertResponse(err, data);
             return done();
         }));
 
+    it('should return empty object if bucket is version enabled but has no ' +
+    'replication config', done =>
+        series([
+            next => s3.putBucketVersioning({
+                Bucket: bucket,
+                VersioningConfiguration: { Status: 'Enabled' },
+            }, next),
+            next =>
+                s3.deleteBucketReplication({ Bucket: bucket }, (err, data) => {
+                    assertResponse(err, data);
+                    return next();
+                }),
+        ], done));
+
     it('should delete a bucket replication config when it has one', done =>
         series([
+            next => s3.putBucketVersioning({
+                Bucket: bucket,
+                VersioningConfiguration: { Status: 'Enabled' },
+            }, next),
             next => s3.putBucketReplication({
                 Bucket: bucket,
                 ReplicationConfiguration: replicationConfig,
             }, next),
             next =>
                 s3.deleteBucketReplication({ Bucket: bucket }, (err, data) => {
-                    assert.strictEqual(err, null);
-                    assert.deepStrictEqual(data, {});
+                    assertResponse(err, data);
                     return next();
                 }),
         ], done));
