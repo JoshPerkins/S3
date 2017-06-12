@@ -24,7 +24,7 @@
                         "s3-website.scality.test"],
     "cdmi": {
         "host": "localhost",
-        "port": 81,
+        "port": 80,
         "path": "/dewpoint"
     },
     "bucketd": {
