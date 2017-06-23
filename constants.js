@@ -87,6 +87,17 @@ const constants = {
         'restore': true,
         'torrent': true,
     },
+
+    // Headers supported by AWS that we do not currently support.
+    encryptionHeaders: [
+        'x-amz-server-side-encryption',
+        'x-amz-server-side-encryption-customer-algorithm',
+        'x-amz-server-side-encryption-aws-kms-key-id',
+        'x-amz-server-side-encryption-context',
+        'x-amz-server-side-encryption-customer-key',
+        'x-amz-server-side-encryption-customer-key-md5',
+    ],
+
     // user metadata header to set object locationConstraint
     objectLocationConstraintHeader: 'x-amz-meta-scal-location-constraint',
 };
