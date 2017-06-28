@@ -1,5 +1,5 @@
 # Forked Scality S3 Server
-Forked to allow GET Bucket V2 calls. Full support has not been implmented!
+Forked to allow GET Bucket V2 calls to support local developer test environments. Full support has not been implemented!
 
 ## Learn more at [s3.scality.com](http://s3.scality.com)
 
