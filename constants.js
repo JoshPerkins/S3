@@ -78,7 +78,7 @@ const constants = {
         'analytics': true,
         'inventory': true,
         'lifecycle': true,
-        'list-type': true,
+        // 'list-type': true, allow list-type to be passed
         'logging': true,
         'metrics': true,
         'notification': true,
