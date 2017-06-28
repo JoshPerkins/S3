@@ -1,5 +1,5 @@
 {
-    "port": 8000,
+    "port": 443,
     "listenOn": [],
     "replicationGroupId": "RG001",
     "restEndpoints": {
@@ -28,7 +28,7 @@
     },
     "vaultd": {
         "host": "localhost",
-        "port": 8500
+        "port": 11500
     },
     "clusters": 10,
     "log": {
@@ -40,18 +40,18 @@
     },
     "metadataClient": {
         "host": "localhost",
-        "port": 9990
+        "port": 11990
     },
     "dataClient": {
         "host": "localhost",
-        "port": 9991
+        "port": 11991
     },
     "metadataDaemon": {
         "bindAddress": "localhost",
-        "port": 9990
+        "port": 11990
     },
     "dataDaemon": {
         "bindAddress": "localhost",
-        "port": 9991
+        "port": 11991
     }
 }
