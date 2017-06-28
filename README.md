@@ -1,25 +1,7 @@
-# Scality S3 Server
-
-![S3 Server logo](res/Scality-S3-Server-Logo-Large.png)
-
-[![CircleCI][badgepub]](https://circleci.com/gh/scality/S3)
-[![Scality CI][badgepriv]](http://ci.ironmann.io/gh/scality/S3)
-[![Docker Pulls][badgedocker]](https://hub.docker.com/r/scality/s3server/)
-[![Docker Pulls][badgetwitter]](https://twitter.com/s3server)
+# Forked Scality S3 Server
+Forked to allow GET Bucket V2 calls. Full support has not been implmented!
 
 ## Learn more at [s3.scality.com](http://s3.scality.com)
-
-## [May I offer you some lovely documentation?](http://s3-server.readthedocs.io/en/latest/)
-
-## Docker
-
-[Run your S3 server with Docker](https://hub.docker.com/r/scality/s3server/)
-
-## Contributing
-
-In order to contribute, please follow the
-[Contributing Guidelines](
-https://github.com/scality/Guidelines/blob/master/CONTRIBUTING.md).
 
 ## Installation
 
@@ -32,7 +14,7 @@ Building and running the Scality S3 Server requires node.js 6.9.5 and npm v3
 ### Clone source code
 
 ```shell
-git clone https://github.com/scality/S3.git
+git clone https://github.com/JoshPerkins/S3.git
 ```
 
 ### Install js dependencies
