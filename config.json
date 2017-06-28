@@ -53,5 +53,10 @@
     "dataDaemon": {
         "bindAddress": "localhost",
         "port": 11991
+    },
+    "certFilePaths": {
+        "key": "./certs/test.key",
+        "cert": "./certs/test.crt",
+        "ca": "./certs/ca.crt"
     }
 }
